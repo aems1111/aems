@@ -1,23 +1,27 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <title>MyAI</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>MyAI</title>
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <div class="chat">
-    <h2>🤖 MyAI</h2>
 
-    <div id="messages"></div>
+<h1>🤖 MyAI</h1>
 
-    <input id="input" placeholder="پیام خود را بنویس...">
+<div id="chatBox"></div>
 
-    <button onclick="send()">ارسال</button>
+<input id="message" placeholder="پیام خود را بنویس">
+
+<button onclick="sendMessage()">ارسال</button>
+
 </div>
 
-<script src="script.js"></script>
+
+<script src="ai.js"></script>
 
 </body>
 </html>
