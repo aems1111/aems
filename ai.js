@@ -5,21 +5,18 @@ JSON.parse(localStorage.getItem("knowledge")) || [];
 function sendMessage(){
 
 let input=document.getElementById("message");
-
 let text=input.value;
 
 let box=document.getElementById("chatBox");
 
 
-box.innerHTML +=
-"<p>👤 شما: "+text+"</p>";
+box.innerHTML += "<p>👤 شما: "+text+"</p>";
 
 
-let answer=findAnswer(text);
+let result=findAnswer(text);
 
 
-box.innerHTML +=
-"<p>🤖 MyAI: "+answer+"</p>";
+box.innerHTML += "<p>🤖 MyAI: "+result+"</p>";
 
 
 input.value="";
@@ -39,10 +36,7 @@ let bestScore=0;
 
 knowledge.forEach(item=>{
 
-
-let score =
-similarity(text,item.question);
-
+let score = similarity(text,item.question);
 
 
 if(score > bestScore){
@@ -52,19 +46,19 @@ bestAnswer=item.answer;
 
 }
 
-
 });
 
 
+// فقط اگر حداقل ۴۰ درصد شباهت داشت جواب بده
 
-if(bestScore >= 0.3){
+if(bestScore >= 0.4){
 
 return bestAnswer;
 
 }
 
 
-return "هنوز جواب این سؤال را یاد نگرفته‌ام.";
+return "این موضوع را هنوز یاد نگرفته‌ام.";
 
 }
 
@@ -74,11 +68,9 @@ return "هنوز جواب این سؤال را یاد نگرفته‌ام.";
 
 function similarity(a,b){
 
-let wordsA =
-a.split(" ");
 
-let wordsB =
-b.split(" ");
+let wordsA=a.split(" ");
+let wordsB=b.split(" ");
 
 
 let same=0;
@@ -86,13 +78,14 @@ let same=0;
 
 wordsA.forEach(word=>{
 
-if(wordsB.includes(word)){
+if(word.length>1 && wordsB.includes(word)){
 same++;
 }
 
 });
 
 
-return same / Math.max(wordsA.length, wordsB.length);
+return same / Math.max(wordsA.length,wordsB.length);
+
 
 }
