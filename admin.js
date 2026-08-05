@@ -1,69 +1,50 @@
-let knowledge =
-JSON.parse(localStorage.getItem("knowledge")) || [];
+let knowledge = JSON.parse(localStorage.getItem("knowledge")) || [];
 
 
 function addKnowledge(){
 
-let question =
-document.getElementById("question").value;
+    let question = document.getElementById("question").value;
+    let answer = document.getElementById("answer").value;
+    let keywords = document.getElementById("keywords").value
+        .split(" ");
+
+    knowledge.push({
+        question: question,
+        answer: answer,
+        keywords: keywords
+    });
 
 
-let answer =
-document.getElementById("answer").value;
+    localStorage.setItem(
+        "knowledge",
+        JSON.stringify(knowledge)
+    );
 
 
-let keywords =
-document.getElementById("keywords").value
-.split(" ");
+    show();
 
-
-knowledge.push({
-
-question:question,
-answer:answer,
-keywords:keywords
-
-});
-
-
-save();
-
-show();
-
-
+    alert("MyAI یاد گرفت ✅");
 }
 
-
-function save(){
-
-localStorage.setItem(
-"knowledge",
-JSON.stringify(knowledge)
-);
-
-}
 
 
 function show(){
 
-let box=document.getElementById("list");
+    let box = document.getElementById("list");
 
-box.innerHTML="";
+    box.innerHTML = "";
 
+    knowledge.forEach(item=>{
 
-knowledge.forEach(item=>{
+        box.innerHTML += `
+        <p>
+        ❓ ${item.question}<br>
+        💡 ${item.answer}
+        </p>
+        <hr>
+        `;
 
-box.innerHTML +=
-`
-<p>
-<b>سؤال:</b> ${item.question}<br>
-<b>جواب:</b> ${item.answer}
-</p>
-<hr>
-`;
-
-});
-
+    });
 
 }
 
