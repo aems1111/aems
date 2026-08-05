@@ -1,72 +1,70 @@
-let knowledge = [];
-
-let savedKnowledge = localStorage.getItem("knowledge");
-
-if(savedKnowledge){
-    knowledge = JSON.parse(savedKnowledge);
-}
-else{
-    fetch("knowledge.json")
-    .then(r => r.json())
-    .then(data => {
-        knowledge = data;
-    });
-}
+let knowledge =
+JSON.parse(localStorage.getItem("knowledge")) || [];
 
 
 function sendMessage(){
 
-    let input = document.getElementById("message");
-    let text = input.value;
+let input=document.getElementById("message");
 
-    let box = document.getElementById("chatBox");
+let text=input.value;
 
-    box.innerHTML += 
-    "<p>👤 شما: " + text + "</p>";
+let box=document.getElementById("chatBox");
 
-    let answer = findAnswer(text);
 
-    box.innerHTML += 
-    "<p>🤖 MyAI: " + answer + "</p>";
+box.innerHTML += 
+"<p>👤 شما: "+text+"</p>";
 
-    input.value="";
+
+let answer=findAnswer(text);
+
+
+box.innerHTML += 
+"<p>🤖 MyAI: "+answer+"</p>";
+
+
+input.value="";
+
 }
 
 
 
 function findAnswer(text){
 
-    text = text.toLowerCase();
+text=text.toLowerCase();
 
-    let bestAnswer = null;
-    let score = 0;
-
-
-    knowledge.forEach(item=>{
-
-        let currentScore = 0;
-
-        item.keywords.forEach(word=>{
-
-            if(text.includes(word.toLowerCase())){
-                currentScore++;
-            }
-
-        });
+let best=null;
+let score=0;
 
 
-        if(currentScore > score){
-            score = currentScore;
-            bestAnswer = item.answer;
-        }
+knowledge.forEach(item=>{
 
-    });
+let point=0;
 
 
-    if(bestAnswer){
-        return bestAnswer;
-    }
+item.keywords.forEach(word=>{
+
+if(text.includes(word.toLowerCase())){
+point++;
+}
+
+});
 
 
-    return "این موضوع را هنوز یاد نگرفته‌ام.";
+if(point>score){
+
+score=point;
+best=item.answer;
+
+}
+
+});
+
+
+if(best){
+return best;
+}
+
+
+return "هنوز این موضوع را یاد نگرفته‌ام.";
+
 }
