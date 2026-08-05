@@ -11,14 +11,14 @@ let text=input.value;
 let box=document.getElementById("chatBox");
 
 
-box.innerHTML += 
+box.innerHTML +=
 "<p>👤 شما: "+text+"</p>";
 
 
 let answer=findAnswer(text);
 
 
-box.innerHTML += 
+box.innerHTML +=
 "<p>🤖 MyAI: "+answer+"</p>";
 
 
@@ -30,41 +30,69 @@ input.value="";
 
 function findAnswer(text){
 
-text=text.toLowerCase();
+text = text.toLowerCase();
 
-let best=null;
-let score=0;
+
+let bestAnswer=null;
+let bestScore=0;
 
 
 knowledge.forEach(item=>{
 
-let point=0;
+
+let score =
+similarity(text,item.question);
 
 
-item.keywords.forEach(word=>{
 
-if(text.includes(word.toLowerCase())){
-point++;
+if(score > bestScore){
+
+bestScore=score;
+bestAnswer=item.answer;
+
+}
+
+
+});
+
+
+
+if(bestScore >= 0.3){
+
+return bestAnswer;
+
+}
+
+
+return "هنوز جواب این سؤال را یاد نگرفته‌ام.";
+
+}
+
+
+
+
+
+function similarity(a,b){
+
+let wordsA =
+a.split(" ");
+
+let wordsB =
+b.split(" ");
+
+
+let same=0;
+
+
+wordsA.forEach(word=>{
+
+if(wordsB.includes(word)){
+same++;
 }
 
 });
 
 
-if(point>score){
-
-score=point;
-best=item.answer;
-
-}
-
-});
-
-
-if(best){
-return best;
-}
-
-
-return "هنوز این موضوع را یاد نگرفته‌ام.";
+return same / Math.max(wordsA.length, wordsB.length);
 
 }
