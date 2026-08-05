@@ -3,41 +3,46 @@ JSON.parse(localStorage.getItem("knowledge")) || [];
 
 
 let userMemory =
-JSON.parse(localStorage.getItem("userMemory")) || {};
+JSON.parse(localStorage.getItem("userMemory")) || [];
 
 
 
 function sendMessage(){
 
-    let input = document.getElementById("message");
 
-    let text = input.value.trim();
-
-    if(text === ""){
-        return;
-    }
+let input=document.getElementById("message");
 
 
-    let box = document.getElementById("chatBox");
+let text=input.value.trim();
 
 
-    box.innerHTML += 
-    "<p>👤 شما: " + text + "</p>";
+if(text=="") return;
 
 
-    let answer = think(text);
+
+let box=document.getElementById("chatBox");
 
 
-    box.innerHTML += 
-    "<p>🤖 MyAI: " + answer + "</p>";
+
+box.innerHTML +=
+"<p>👤 شما: "+text+"</p>";
 
 
-    input.value = "";
+
+let answer=think(text);
 
 
-    box.scrollTop = box.scrollHeight;
+
+box.innerHTML +=
+"<p>🤖 MyAI: "+answer+"</p>";
+
+
+
+input.value="";
+
 
 }
+
 
 
 
@@ -45,121 +50,107 @@ function sendMessage(){
 function think(text){
 
 
-    let cleanText = text
-    .toLowerCase()
-    .replace(/[؟?!.,]/g,"")
-    .trim();
+let clean=text
+.toLowerCase()
+.replace(/[؟?!.,]/g,"");
 
 
 
-    // ----------------------
-    // حافظه اسم کاربر
-    // ----------------------
+// حافظه اسم
+
+if(clean.includes("اسم من")){
 
 
-    if(
-        cleanText.includes("اسم من") ||
-        cleanText.includes("نام من")
-    ){
-
-        let name = cleanText
-        .replace("اسم من","")
-        .replace("نام من","")
-        .replace("است","")
-        .trim();
-
-
-        if(name.length > 0){
-
-            userMemory.name = name;
-
-
-            localStorage.setItem(
-                "userMemory",
-                JSON.stringify(userMemory)
-            );
-
-
-            return "خوشحالم که آشنا شدم " + name + " 😊";
-
-        }
-
-    }
+let name=
+clean.replace("اسم من","")
+.replace("است","")
+.trim();
 
 
 
-    if(
-        cleanText.includes("اسم من چیست") ||
-        cleanText.includes("نام من چیست")
-    ){
+userMemory.name=name;
 
-        if(userMemory.name){
 
-            return "اسم شما " 
-            + userMemory.name 
-            + " است.";
-
-        }
-        else{
-
-            return "هنوز اسم شما را نمی‌دانم.";
-
-        }
-
-    }
+localStorage.setItem(
+"userMemory",
+JSON.stringify(userMemory)
+);
 
 
 
+return "خوشحالم که آشنا شدم "+name+" 😊";
 
-    // ----------------------
-    // جستجوی دانش
-    // ----------------------
-
-
-    let bestAnswer = null;
-
-    let bestScore = 0;
-
-
-
-    knowledge.forEach(item=>{
-
-
-        let score = similarity(
-            cleanText,
-            item.question.toLowerCase()
-        );
-
-
-        if(score > bestScore){
-
-            bestScore = score;
-
-            bestAnswer = item.answer;
-
-        }
-
-
-    });
-
-
-
-
-    // فقط جواب‌های مطمئن
-
-    if(bestScore >= 0.4){
-
-        return bestAnswer;
-
-    }
-
-
-
-
-    return "این موضوع را هنوز یاد نگرفته‌ام. می‌توانی بعداً از پنل مدیریت به من یاد بدهی.";
 
 }
 
+
+
+
+if(clean.includes("اسم من چیست")){
+
+
+if(userMemory.name){
+
+return "اسم شما "+
+userMemory.name+
+" است.";
+
+}
+
+}
+
+
+
+
+// جستجوی دانش
+
+
+let best=null;
+
+let score=0;
+
+
+
+knowledge.forEach(item=>{
+
+
+let s=
+similarity(clean,item.question);
+
+
+
+if(s>score){
+
+score=s;
+
+best=item.answer;
+
+}
+
+
+});
+
+
+
+
+if(score>=0.4){
+
+return best;
+
+}
+
+
+
+
+// ذخیره سؤال ناشناخته
+
+saveUnknownQuestion(text);
+
+
+
+return "این موضوع را هنوز یاد نگرفته‌ام، ولی سؤال تو ذخیره شد تا بعداً یاد بگیرم.";
+
+}
 
 
 
@@ -167,38 +158,30 @@ function think(text){
 function similarity(a,b){
 
 
-    let wordsA =
-    a.split(" ");
+let A=a.split(" ");
+
+let B=b.split(" ");
 
 
-    let wordsB =
-    b.split(" ");
+let count=0;
 
 
-
-    let same = 0;
-
+A.forEach(word=>{
 
 
-    wordsA.forEach(word=>{
+if(B.includes(word)){
+
+count++;
+
+}
 
 
-        if(
-            word.length > 1 &&
-            wordsB.includes(word)
-        ){
-
-            same++;
-
-        }
-
-
-    });
+});
 
 
 
-    return same /
-    Math.max(wordsA.length, wordsB.length);
+return count /
+Math.max(A.length,B.length);
 
 
 }
