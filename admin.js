@@ -2,8 +2,9 @@ let knowledge =
 JSON.parse(localStorage.getItem("knowledge")) || [];
 
 
+let unknown =
+JSON.parse(localStorage.getItem("unknown")) || [];
 
-let editIndex = -1;
 
 
 
@@ -19,8 +20,7 @@ document.getElementById("answer").value.trim();
 
 
 let keywords =
-document.getElementById("keywords").value
-.split(" ");
+document.getElementById("keywords").value.split(" ");
 
 
 
@@ -34,8 +34,7 @@ return;
 
 
 
-
-let data={
+knowledge.push({
 
 question:question,
 
@@ -43,26 +42,18 @@ answer:answer,
 
 keywords:keywords
 
-};
+});
 
 
 
-
-if(editIndex === -1){
-
-
-knowledge.push(data);
+saveKnowledge();
 
 
-}
 
-else{
-
-
-knowledge[editIndex]=data;
+clearForm();
 
 
-editIndex=-1;
+showKnowledge();
 
 
 }
@@ -70,72 +61,62 @@ editIndex=-1;
 
 
 
-save();
-
-
-clear();
-
-
-show();
-
-
-alert("ذخیره شد ✅");
-
-
-}
-
-
-
-
-
-function save(){
-
+function saveKnowledge(){
 
 localStorage.setItem(
-
 "knowledge",
-
 JSON.stringify(knowledge)
-
 );
-
 
 }
 
 
 
 
-function show(){
+function showKnowledge(){
 
 
 let box =
 document.getElementById("list");
 
 
-let search =
-document.getElementById("search").value
-.toLowerCase();
+box.innerHTML="";
 
+
+
+knowledge.forEach((item)=>{
+
+
+box.innerHTML += `
+
+<p>
+❓ ${item.question}<br>
+💡 ${item.answer}
+</p>
+
+<hr>
+
+`;
+
+});
+
+
+}
+
+
+
+function showUnknown(){
+
+
+let box =
+document.getElementById("unknownList");
 
 
 box.innerHTML="";
 
 
 
-knowledge.forEach((item,index)=>{
-
-
-if(
-search &&
-!item.question.toLowerCase()
-.includes(search)
-){
-
-return;
-
-}
-
-
+unknown.forEach((item,index)=>{
 
 
 box.innerHTML += `
@@ -144,27 +125,19 @@ box.innerHTML += `
 <div>
 
 <p>
-❓ ${item.question}
+❓ ${item}
 </p>
 
 
-<p>
-💡 ${item.answer}
-</p>
+<input id="answer${index}" placeholder="جواب را بنویس">
 
 
-<button onclick="editKnowledge(${index})">
-ویرایش
-</button>
-
-
-<button onclick="deleteKnowledge(${index})">
-حذف
+<button onclick="teach(${index})">
+یاد دادن
 </button>
 
 
 <hr>
-
 
 </div>
 
@@ -172,38 +145,72 @@ box.innerHTML += `
 `;
 
 
+});
+
+
+}
+
+
+
+
+
+function teach(index){
+
+
+let question =
+unknown[index];
+
+
+let answer =
+document.getElementById(
+"answer"+index
+).value;
+
+
+
+if(answer==""){
+
+alert("جواب را وارد کن");
+
+return;
+
+}
+
+
+
+knowledge.push({
+
+question:question,
+
+answer:answer,
+
+keywords:question.split(" ")
 
 });
 
 
 
-}
+saveKnowledge();
 
 
 
-
-function editKnowledge(index){
-
-
-let item =
-knowledge[index];
+unknown.splice(index,1);
 
 
 
-document.getElementById("question").value =
-item.question;
-
-
-document.getElementById("answer").value =
-item.answer;
-
-
-document.getElementById("keywords").value =
-item.keywords.join(" ");
+localStorage.setItem(
+"unknown",
+JSON.stringify(unknown)
+);
 
 
 
-editIndex=index;
+showUnknown();
+
+showKnowledge();
+
+
+alert("MyAI یاد گرفت ✅");
 
 
 }
@@ -212,36 +219,7 @@ editIndex=index;
 
 
 
-function deleteKnowledge(index){
-
-
-let ok =
-confirm("این آموزش حذف شود؟");
-
-
-
-if(ok){
-
-
-knowledge.splice(index,1);
-
-
-save();
-
-
-show();
-
-
-}
-
-
-}
-
-
-
-
-
-function clear(){
+function clearForm(){
 
 
 document.getElementById("question").value="";
@@ -256,4 +234,6 @@ document.getElementById("keywords").value="";
 
 
 
-show();
+showKnowledge();
+
+showUnknown();
