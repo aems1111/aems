@@ -14,24 +14,34 @@
 <h1>👑 پنل مدیریت MyAI</h1>
 
 
+<h2>➕ آموزش جدید</h2>
+
+
 <input id="question" placeholder="سؤال">
 
 <input id="answer" placeholder="جواب">
 
-<input id="keywords" placeholder="کلمات کلیدی با فاصله">
+<input id="keywords" placeholder="کلمات کلیدی">
 
 
 <button onclick="addKnowledge()">
-یاد دادن
+ذخیره آموزش
 </button>
+
 
 
 <hr>
 
 
-<input id="search" 
-placeholder="جستجو در دانش"
-oninput="show()">
+
+<h2>❓ سؤال‌های بی‌جواب کاربران</h2>
+
+
+<div id="unknownList"></div>
+
+
+
+<hr>
 
 
 
@@ -41,11 +51,11 @@ oninput="show()">
 <div id="list"></div>
 
 
+
 </div>
 
 
 <script src="admin.js"></script>
-
 
 </body>
 
