@@ -13,26 +13,40 @@
 
 <h1>👑 پنل مدیریت MyAI</h1>
 
+
 <input id="question" placeholder="سؤال">
 
 <input id="answer" placeholder="جواب">
 
-<input id="keywords" placeholder="کلمات کلیدی (با فاصله جدا کن)">
+<input id="keywords" placeholder="کلمات کلیدی با فاصله">
+
 
 <button onclick="addKnowledge()">
 یاد دادن
 </button>
 
-<h3>دانش فعلی:</h3>
+
+<hr>
+
+
+<input id="search" 
+placeholder="جستجو در دانش"
+oninput="show()">
+
+
+
+<h2>📚 دانش MyAI</h2>
+
 
 <div id="list"></div>
+
 
 </div>
 
 
 <script src="admin.js"></script>
 
+
 </body>
 
 </html>
-
