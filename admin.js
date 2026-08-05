@@ -237,3 +237,4 @@ document.getElementById("keywords").value="";
 showKnowledge();
 
 showUnknown();
+
