@@ -1,41 +1,22 @@
 class StorageEngine {
 
 
-    constructor(){
-
-        this.prefix="myai_";
-
-    }
-
-
-
-
-    save(name,data){
-
+    save(key,data){
 
         localStorage.setItem(
-
-            this.prefix+name,
-
+            key,
             JSON.stringify(data)
-
         );
-
 
     }
 
 
 
-
-
-
-    load(name){
+    load(key){
 
 
         let data =
-        localStorage.getItem(
-            this.prefix+name
-        );
+        localStorage.getItem(key);
 
 
 
@@ -52,27 +33,12 @@ class StorageEngine {
             return JSON.parse(data);
 
         }
+
         catch(e){
 
             return null;
 
         }
-
-
-    }
-
-
-
-
-
-    remove(name){
-
-
-        localStorage.removeItem(
-
-            this.prefix+name
-
-        );
 
 
     }
