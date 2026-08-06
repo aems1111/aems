@@ -371,3 +371,4 @@ class SemanticSearchEngine {
 
 
 window.SemanticSearchEngine = SemanticSearchEngine;
+
