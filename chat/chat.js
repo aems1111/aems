@@ -119,7 +119,6 @@ addMessage(
 );
 
 
-
 input.value="";
 
 }
