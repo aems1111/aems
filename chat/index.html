@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+
+<html lang="fa" dir="rtl">
+
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>
+MyAI Chat
+</title>
+
+
+
+<style>
+
+
+body{
+
+font-family:tahoma;
+
+background:#eee;
+
+padding:20px;
+
+}
+
+
+
+#chat{
+
+background:white;
+
+height:500px;
+
+overflow:auto;
+
+padding:15px;
+
+border-radius:10px;
+
+}
+
+
+
+.message{
+
+padding:10px;
+
+margin:10px 0;
+
+border-radius:8px;
+
+}
+
+
+
+.user{
+
+background:#d9fdd3;
+
+}
+
+
+
+.ai{
+
+background:#eeeeee;
+
+}
+
+
+
+input{
+
+width:80%;
+
+padding:12px;
+
+}
+
+
+
+button{
+
+padding:12px;
+
+}
+
+
+
+</style>
+
+
+</head>
+
+
+
+<body>
+
+
+
+<h1>
+🤖 MyAI
+</h1>
+
+
+
+<div id="chat">
+
+</div>
+
+
+
+
+<input 
+id="message"
+placeholder="پیام خود را بنویسید..."
+>
+
+
+
+<button onclick="send()">
+
+ارسال
+
+</button>
+
+
+
+
+
+
+
+<script src="../brain/language/normalize.js"></script>
+
+<script src="../brain/language/spellcheck.js"></script>
+
+<script src="../brain/language/tokenizer.js"></script>
+
+<script src="../brain/language/synonyms.js"></script>
+
+<script src="../brain/language/questionType.js"></script>
+
+<script src="../brain/language/entities.js"></script>
+
+
+<script src="../brain/knowledge/knowledge.js"></script>
+
+<script src="../brain/search/semanticSearch.js"></script>
+
+<script src="../brain/memory/memory.js"></script>
+
+<script src="../brain/context/context.js"></script>
+
+<script src="../brain/reasoning/reasoning.js"></script>
+
+<script src="../brain/learning/learning.js"></script>
+
+<script src="../brain/core/myai.js"></script>
+
+
+<script src="chat.js"></script>
+
+
+</body>
+
+
+</html>
