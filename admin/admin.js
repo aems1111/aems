@@ -1,15 +1,32 @@
+let database =
+new DatabaseEngine();
+
+
+
+database.init();
+
+
+
+
+
+let knowledge =
+new KnowledgeEngine(
+    database
+);
+
+
+
+
+
 let learning =
 new LearningEngine();
 
 
-let knowledge =
-new KnowledgeEngine();
-
-
-
-
 
 learning.load();
+
+
+
 
 
 
@@ -55,27 +72,63 @@ return;
 
 
 
-learning.teach(
 
-question,
-
-answer,
-
-knowledge
-
-);
+knowledge.add({
 
 
+    question:question,
+
+
+    patterns:[],
+
+
+    keywords:
+
+    question
+
+    .split(" "),
+
+    
+    entities:[],
+
+
+    category:"عمومی",
+
+
+    answer:answer
 
 
 
-save();
+});
+
+
+
+
+
+learning.remove(question);
+
+
+
+learning.save();
+
 
 
 
 alert(
 "آموزش انجام شد"
 );
+
+
+
+document.getElementById(
+"question"
+).value="";
+
+
+
+document.getElementById(
+"answer"
+).value="";
 
 
 
@@ -93,64 +146,55 @@ loadUnknown();
 
 
 
-function save(){
+function answerQuestion(q){
 
 
 
-localStorage.setItem(
-
-"myai_learning",
-
-learning.export()
-
+let input =
+document.getElementById(
+"ans_"+q
 );
 
 
 
 
-localStorage.setItem(
 
-"myai_knowledge",
-
-JSON.stringify(
-knowledge.getAll()
-)
-
-);
+knowledge.add({
 
 
-
-}
-
+question:q,
 
 
+patterns:[],
 
 
+keywords:q.split(" "),
 
 
+entities:[],
 
 
-function loadKnowledge(){
+category:"عمومی",
 
 
+answer:
+input.value
 
-let data =
-localStorage.getItem(
-"myai_knowledge"
-);
+
+});
 
 
 
 
-if(data){
+
+learning.remove(q);
 
 
-knowledge.load(
-JSON.parse(data)
-);
+learning.save();
 
 
-}
+
+loadUnknown();
 
 
 
@@ -180,14 +224,16 @@ box.innerHTML="";
 
 
 
-let items =
+
+let list =
 learning.getTop();
 
 
 
 
 
-items.forEach(item=>{
+list.forEach(item=>{
+
 
 
 let div =
@@ -201,7 +247,7 @@ div.className="question";
 
 
 
-div.innerHTML = `
+div.innerHTML=`
 
 <b>
 ${item.question}
@@ -209,21 +255,24 @@ ${item.question}
 
 <br>
 
-تعداد پرسش:
+تعداد:
 ${item.count}
 
 <br><br>
 
+
 <input 
-placeholder="جواب"
 id="ans_${item.question}"
+placeholder="جواب"
 >
+
 
 <button onclick="answerQuestion('${item.question}')">
 
-آموزش
+یاد بده
 
 </button>
+
 
 `;
 
@@ -246,45 +295,5 @@ box.appendChild(div);
 
 
 
-
-function answerQuestion(q){
-
-
-
-let input =
-document.getElementById(
-"ans_"+q
-);
-
-
-
-learning.teach(
-
-q,
-
-input.value,
-
-knowledge
-
-);
-
-
-
-save();
-
-
-loadUnknown();
-
-
-
-}
-
-
-
-
-
-
-
-loadKnowledge();
 
 loadUnknown();
