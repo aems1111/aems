@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>MyAI Admin</title>
+
+
+<style>
+
+body{
+
+    font-family:tahoma;
+
+    background:#f2f2f2;
+
+    padding:20px;
+
+}
+
+
+.box{
+
+    background:white;
+
+    padding:20px;
+
+    margin-bottom:20px;
+
+    border-radius:10px;
+
+}
+
+
+input,textarea{
+
+    width:100%;
+
+    padding:10px;
+
+    margin:5px 0;
+
+}
+
+
+
+button{
+
+    padding:10px 20px;
+
+    cursor:pointer;
+
+}
+
+
+
+.question{
+
+    background:#eee;
+
+    padding:10px;
+
+    margin:10px 0;
+
+    border-radius:5px;
+
+}
+
+
+
+</style>
+
+
+</head>
+
+
+<body>
+
+
+<h1>
+پنل مدیریت MyAI
+</h1>
+
+
+
+<div class="box">
+
+
+<h3>
+آموزش جدید
+</h3>
+
+
+<input id="question" placeholder="سؤال">
+
+
+<textarea 
+id="answer"
+placeholder="جواب">
+</textarea>
+
+
+<button onclick="teach()">
+
+یاد دادن
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+<div class="box">
+
+
+<h3>
+سؤال‌های یاد نگرفته شده
+</h3>
+
+
+<div id="unknown">
+
+</div>
+
+
+</div>
+
+
+
+
+
+<script src="../brain/learning/learning.js"></script>
+
+<script src="../brain/knowledge/knowledge.js"></script>
+
+<script src="admin.js"></script>
+
+
+</body>
+
+</html>
