@@ -9,7 +9,6 @@ localStorage.getItem("currentUser");
 if(!currentUser){
 
 alert("لطفاً وارد حساب شوید");
-
 window.location="login.html";
 
 }
@@ -20,10 +19,9 @@ let allMemory =
 JSON.parse(localStorage.getItem("userMemory")) || {};
 
 
-
 if(!allMemory[currentUser]){
 
-allMemory[currentUser] = {};
+allMemory[currentUser]={};
 
 }
 
@@ -34,9 +32,7 @@ allMemory[currentUser];
 
 
 
-
-
-function saveUserMemory(){
+function saveMemory(){
 
 allMemory[currentUser]=userMemory;
 
@@ -93,79 +89,41 @@ input.value="";
 
 
 
+// مغز اصلی
 
 function think(text){
 
 
 let clean =
-text
-.toLowerCase()
-.replace(/[؟?!.,]/g,"")
-.trim();
+normalize(text);
 
 
 
-
-// =====================
-// پرسیدن اسم کاربر
-// =====================
-
-
-if(
-clean.includes("اسم من چیست") ||
-clean.includes("نام من چیست") ||
-clean.includes("اسمم چیست")
-){
-
-
-if(userMemory.name){
-
-return "اسم شما "+userMemory.name+" است 😊";
-
-}
-
-else{
-
-return "هنوز اسم شما را نمی‌دانم.";
-
-}
-
-
-}
+let intent =
+detectIntent(clean);
 
 
 
 
 
-// =====================
-// معرفی اسم کاربر
-// =====================
+// ------------------
+// معرفی اسم
+// ------------------
 
 
-if(
-clean.startsWith("اسم من") ||
-clean.startsWith("نام من")
-){
+if(intent==="set_name"){
 
 
 let name =
-clean
-.replace("اسم من","")
-.replace("نام من","")
-.replace("است","")
-.replace("هست","")
-.trim();
+extractName(clean);
 
 
-
-if(name.length>0){
+if(name){
 
 
 userMemory.name=name;
 
-
-saveUserMemory();
-
+saveMemory();
 
 
 return "خوشحالم که آشنا شدم "+name+" 😊";
@@ -179,33 +137,155 @@ return "خوشحالم که آشنا شدم "+name+" 😊";
 
 
 
-// =====================
+// ------------------
+// پرسیدن اسم
+// ------------------
+
+
+if(intent==="ask_name"){
+
+
+if(userMemory.name){
+
+return "اسم شما "+userMemory.name+" است 😊";
+
+}
+
+
+return "هنوز اسم شما را نمی‌دانم.";
+
+}
+
+
+
+
+
+// ------------------
 // جستجوی دانش
-// =====================
+// ------------------
 
 
-let bestAnswer=null;
+let result =
+searchKnowledge(clean);
 
-let bestScore=0;
+
+
+if(result){
+
+return result;
+
+}
+
+
+
+return "این موضوع را هنوز یاد نگرفته‌ام.";
+
+}
+
+
+
+
+
+// تشخیص منظور
+
+function detectIntent(text){
+
+
+
+// سؤال درباره اسم
+
+if(
+text.includes("اسم من چیست") ||
+text.includes("اسمم چیست") ||
+text.includes("نام من چیست") ||
+text.includes("من کی هستم")
+){
+
+return "ask_name";
+
+}
+
+
+
+
+// معرفی اسم
+
+if(
+text.includes("اسم من") ||
+text.includes("نام من") ||
+text.includes("من هستم") ||
+text.includes("منم")
+){
+
+return "set_name";
+
+}
+
+
+
+return "unknown";
+
+}
+
+
+
+
+
+function extractName(text){
+
+
+let name=text;
+
+
+name=name.replace("اسم من","");
+
+name=name.replace("نام من","");
+
+name=name.replace("است","");
+
+name=name.replace("هست","");
+
+name=name.replace("هستم","");
+
+name=name.replace("من","");
+
+name=name.trim();
+
+
+
+return name;
+
+}
+
+
+
+
+
+function searchKnowledge(text){
+
+
+let best=null;
+
+let score=0;
 
 
 
 knowledge.forEach(item=>{
 
 
-let score =
+let s =
 similarity(
-clean,
-item.question.toLowerCase()
+text,
+normalize(item.question)
 );
 
 
 
-if(score>bestScore){
+if(s>score){
 
-bestScore=score;
+score=s;
 
-bestAnswer=item.answer;
+best=item.answer;
 
 }
 
@@ -214,16 +294,15 @@ bestAnswer=item.answer;
 
 
 
-if(bestScore>=0.4){
+if(score>=0.4){
 
-return bestAnswer;
+return best;
 
 }
 
 
 
-
-return "این موضوع را هنوز یاد نگرفته‌ام.";
+return null;
 
 }
 
@@ -258,8 +337,26 @@ count++;
 });
 
 
-return count /
-Math.max(A.length,B.length);
 
+return count /
+Math.max(
+A.length,
+B.length
+);
+
+
+}
+
+
+
+
+
+function normalize(text){
+
+
+return text
+.toLowerCase()
+.replace(/[؟?!.,]/g,"")
+.trim();
 
 }
