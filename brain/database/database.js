@@ -8,6 +8,7 @@ class DatabaseEngine {
         new StorageEngine();
 
 
+
         this.knowledge=[];
 
 
@@ -18,30 +19,26 @@ class DatabaseEngine {
 
 
 
-
     init(){
+
 
 
         let data =
         this.storage.load(
-            "knowledge"
+            "myai_knowledge"
         );
 
 
 
         if(data){
 
-
             this.knowledge=data;
-
 
         }
 
 
 
     }
-
-
 
 
 
@@ -62,18 +59,19 @@ class DatabaseEngine {
 
 
 
+    add(item){
 
-    addKnowledge(item){
 
 
         this.knowledge.push(item);
 
 
+
         this.save();
 
 
-    }
 
+    }
 
 
 
@@ -87,29 +85,11 @@ class DatabaseEngine {
 
         this.storage.save(
 
-            "knowledge",
+            "myai_knowledge",
 
             this.knowledge
 
         );
-
-
-    }
-
-
-
-
-
-
-
-
-    clear(){
-
-
-        this.knowledge=[];
-
-
-        this.save();
 
 
     }
