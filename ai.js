@@ -6,179 +6,147 @@ let currentUser =
 localStorage.getItem("currentUser");
 
 
-if(!currentUser){
-
-alert("لطفاً وارد حساب شوید");
-window.location="login.html";
-
-}
-
-
-
 let allMemory =
 JSON.parse(localStorage.getItem("userMemory")) || {};
 
 
 if(!allMemory[currentUser]){
-
-allMemory[currentUser]={};
-
+    allMemory[currentUser] = {};
 }
 
 
-
-let userMemory =
-allMemory[currentUser];
+let userMemory = allMemory[currentUser];
 
 
 
 function saveMemory(){
 
-allMemory[currentUser]=userMemory;
+    allMemory[currentUser] = userMemory;
 
-
-localStorage.setItem(
-"userMemory",
-JSON.stringify(allMemory)
-);
+    localStorage.setItem(
+        "userMemory",
+        JSON.stringify(allMemory)
+    );
 
 }
-
 
 
 
 
 function sendMessage(){
 
-
-let input =
-document.getElementById("message");
-
-
-let text =
-input.value.trim();
+    let input =
+    document.getElementById("message");
 
 
-if(text==="") return;
+    let text =
+    input.value.trim();
 
 
-
-let box =
-document.getElementById("chatBox");
-
-
-box.innerHTML +=
-"<p>👤 شما: "+text+"</p>";
+    if(text==="") return;
 
 
 
-let answer =
-think(text);
+    let box =
+    document.getElementById("chatBox");
+
+
+    box.innerHTML +=
+    "<p>👤 شما: "+text+"</p>";
 
 
 
-box.innerHTML +=
-"<p>🤖 MyAI: "+answer+"</p>";
+    let answer =
+    think(text);
 
 
 
-input.value="";
+    box.innerHTML +=
+    "<p>🤖 MyAI: "+answer+"</p>";
+
+
+
+    input.value="";
 
 }
 
 
 
 
-// مغز اصلی
 
 function think(text){
 
 
-let clean =
-normalize(text);
+    let clean =
+    normalize(text);
 
 
 
-let intent =
-detectIntent(clean);
+    let intent =
+    detectIntent(clean);
 
 
 
+    if(intent==="ask_ai_name"){
+
+        return "من MyAI هستم 🤖";
+
+    }
 
 
-// ------------------
-// معرفی اسم
-// ------------------
+
+    if(intent==="ask_user_name"){
 
 
-if(intent==="set_name"){
+        if(userMemory.name){
+
+            return "اسم شما "+userMemory.name+" است 😊";
+
+        }
 
 
-let name =
-extractName(clean);
+        return "هنوز اسم شما را نمی‌دانم.";
 
-
-if(name){
-
-
-userMemory.name=name;
-
-saveMemory();
-
-
-return "خوشحالم که آشنا شدم "+name+" 😊";
-
-}
-
-
-}
+    }
 
 
 
 
-
-// ------------------
-// پرسیدن اسم
-// ------------------
+    if(intent==="set_user_name"){
 
 
-if(intent==="ask_name"){
+        let name =
+        extractName(clean);
 
 
-if(userMemory.name){
+        if(name){
 
-return "اسم شما "+userMemory.name+" است 😊";
+            userMemory.name=name;
 
-}
-
-
-return "هنوز اسم شما را نمی‌دانم.";
-
-}
+            saveMemory();
 
 
+            return "خوشحالم که آشنا شدم "+name+" 😊";
+
+        }
+
+    }
 
 
 
-// ------------------
-// جستجوی دانش
-// ------------------
+
+    let answer =
+    searchKnowledge(clean);
 
 
-let result =
-searchKnowledge(clean);
+    if(answer){
+
+        return answer;
+
+    }
 
 
-
-if(result){
-
-return result;
-
-}
-
-
-
-return "این موضوع را هنوز یاد نگرفته‌ام.";
+    return "این موضوع را هنوز یاد نگرفته‌ام.";
 
 }
 
@@ -186,44 +154,59 @@ return "این موضوع را هنوز یاد نگرفته‌ام.";
 
 
 
-// تشخیص منظور
+
 
 function detectIntent(text){
 
 
 
-// سؤال درباره اسم
+    // اسم MyAI
 
-if(
-text.includes("اسم من چیست") ||
-text.includes("اسمم چیست") ||
-text.includes("نام من چیست") ||
-text.includes("من کی هستم")
-){
+    if(
+        text.includes("اسم تو") ||
+        text.includes("نام تو") ||
+        text.includes("تو کی هستی")
+    ){
 
-return "ask_name";
+        return "ask_ai_name";
 
-}
-
+    }
 
 
 
-// معرفی اسم
+    // پرسیدن اسم کاربر
 
-if(
-text.includes("اسم من") ||
-text.includes("نام من") ||
-text.includes("من هستم") ||
-text.includes("منم")
-){
+    if(
+        text.includes("اسم من چیه") ||
+        text.includes("اسم من چیست") ||
+        text.includes("نام من چیه") ||
+        text.includes("نام من چیست") ||
+        text.includes("اسمم چیه")
+    ){
 
-return "set_name";
+        return "ask_user_name";
 
-}
+    }
 
 
 
-return "unknown";
+
+    // معرفی اسم کاربر
+
+    if(
+        text.includes("اسم من") &&
+        (
+        text.includes("هست") ||
+        text.includes("است")
+        )
+    ){
+
+        return "set_user_name";
+
+    }
+
+
+    return "unknown";
 
 }
 
@@ -234,26 +217,18 @@ return "unknown";
 function extractName(text){
 
 
-let name=text;
+    let name=text;
 
 
-name=name.replace("اسم من","");
-
-name=name.replace("نام من","");
-
-name=name.replace("است","");
-
-name=name.replace("هست","");
-
-name=name.replace("هستم","");
-
-name=name.replace("من","");
-
-name=name.trim();
+    name=name
+    .replace("اسم من","")
+    .replace("نام من","")
+    .replace("هست","")
+    .replace("است","")
+    .trim();
 
 
-
-return name;
+    return name;
 
 }
 
@@ -264,45 +239,42 @@ return name;
 function searchKnowledge(text){
 
 
-let best=null;
+    let best=null;
 
-let score=0;
-
-
-
-knowledge.forEach(item=>{
-
-
-let s =
-similarity(
-text,
-normalize(item.question)
-);
+    let score=0;
 
 
 
-if(s>score){
-
-score=s;
-
-best=item.answer;
-
-}
+    knowledge.forEach(item=>{
 
 
-});
+        let s =
+        similarity(
+            text,
+            normalize(item.question)
+        );
+
+
+        if(s>score){
+
+            score=s;
+
+            best=item.answer;
+
+        }
+
+    });
 
 
 
-if(score>=0.4){
+    if(score>=0.4){
 
-return best;
+        return best;
 
-}
+    }
 
 
-
-return null;
+    return null;
 
 }
 
@@ -313,37 +285,35 @@ return null;
 function similarity(a,b){
 
 
-let A=a.split(" ");
+    let A=a.split(" ");
 
-let B=b.split(" ");
-
-
-let count=0;
+    let B=b.split(" ");
 
 
-A.forEach(word=>{
+    let count=0;
 
 
-if(
-word.length>1 &&
-B.includes(word)
-){
-
-count++;
-
-}
+    A.forEach(word=>{
 
 
-});
+        if(
+            word.length>1 &&
+            B.includes(word)
+        ){
+
+            count++;
+
+        }
+
+    });
 
 
 
-return count /
-Math.max(
-A.length,
-B.length
-);
-
+    return count /
+    Math.max(
+        A.length,
+        B.length
+    );
 
 }
 
@@ -353,10 +323,9 @@ B.length
 
 function normalize(text){
 
-
-return text
-.toLowerCase()
-.replace(/[؟?!.,]/g,"")
-.trim();
+    return text
+    .toLowerCase()
+    .replace(/[؟?!.,]/g,"")
+    .trim();
 
 }
