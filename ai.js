@@ -25,16 +25,12 @@ if(!allMemory[currentUser]){
 
 allMemory[currentUser] = {};
 
-localStorage.setItem(
-"userMemory",
-JSON.stringify(allMemory)
-);
-
 }
 
 
 
-let userMemory = allMemory[currentUser];
+let userMemory =
+allMemory[currentUser];
 
 
 
@@ -42,7 +38,7 @@ let userMemory = allMemory[currentUser];
 
 function saveUserMemory(){
 
-allMemory[currentUser] = userMemory;
+allMemory[currentUser]=userMemory;
 
 
 localStorage.setItem(
@@ -55,7 +51,9 @@ JSON.stringify(allMemory)
 
 
 
+
 function sendMessage(){
+
 
 let input =
 document.getElementById("message");
@@ -108,8 +106,9 @@ text
 
 
 
-
-// اول بررسی کن آیا کاربر اسمش را پرسیده
+// =====================
+// پرسیدن اسم کاربر
+// =====================
 
 
 if(
@@ -121,7 +120,7 @@ clean.includes("اسمم چیست")
 
 if(userMemory.name){
 
-return "اسم شما " + userMemory.name + " است.";
+return "اسم شما "+userMemory.name+" است 😊";
 
 }
 
@@ -137,12 +136,15 @@ return "هنوز اسم شما را نمی‌دانم.";
 
 
 
-// یادگیری اسم کاربر
+
+// =====================
+// معرفی اسم کاربر
+// =====================
 
 
 if(
-clean.includes("اسم من") ||
-clean.includes("نام من")
+clean.startsWith("اسم من") ||
+clean.startsWith("نام من")
 ){
 
 
@@ -151,14 +153,15 @@ clean
 .replace("اسم من","")
 .replace("نام من","")
 .replace("است","")
+.replace("هست","")
 .trim();
 
 
 
-if(name.length > 0){
+if(name.length>0){
 
 
-userMemory.name = name;
+userMemory.name=name;
 
 
 saveUserMemory();
@@ -167,7 +170,6 @@ saveUserMemory();
 
 return "خوشحالم که آشنا شدم "+name+" 😊";
 
-
 }
 
 
@@ -176,7 +178,10 @@ return "خوشحالم که آشنا شدم "+name+" 😊";
 
 
 
-// جستجو در دانش
+
+// =====================
+// جستجوی دانش
+// =====================
 
 
 let bestAnswer=null;
@@ -196,11 +201,11 @@ item.question.toLowerCase()
 
 
 
-if(score > bestScore){
+if(score>bestScore){
 
-bestScore = score;
+bestScore=score;
 
-bestAnswer = item.answer;
+bestAnswer=item.answer;
 
 }
 
@@ -209,12 +214,12 @@ bestAnswer = item.answer;
 
 
 
-
-if(bestScore >= 0.4){
+if(bestScore>=0.4){
 
 return bestAnswer;
 
 }
+
 
 
 
@@ -229,25 +234,20 @@ return "این موضوع را هنوز یاد نگرفته‌ام.";
 function similarity(a,b){
 
 
-let wordsA =
-a.split(" ");
+let A=a.split(" ");
 
-
-let wordsB =
-b.split(" ");
-
+let B=b.split(" ");
 
 
 let count=0;
 
 
-
-wordsA.forEach(word=>{
+A.forEach(word=>{
 
 
 if(
 word.length>1 &&
-wordsB.includes(word)
+B.includes(word)
 ){
 
 count++;
@@ -258,12 +258,8 @@ count++;
 });
 
 
-
 return count /
-Math.max(
-wordsA.length,
-wordsB.length
-);
+Math.max(A.length,B.length);
 
 
 }
