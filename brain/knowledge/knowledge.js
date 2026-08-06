@@ -1,10 +1,17 @@
 class KnowledgeEngine {
 
 
-    constructor(){
+    constructor(database){
+
+
+        this.database = database;
 
 
         this.knowledge = [];
+
+
+        this.load();
+
 
     }
 
@@ -13,19 +20,26 @@ class KnowledgeEngine {
 
 
 
-    load(data){
 
 
-        if(Array.isArray(data)){
+    load(){
 
 
-            this.knowledge = data;
+
+        if(this.database){
+
+
+            this.knowledge =
+            this.database.getKnowledge();
+
 
 
         }
 
 
+
     }
+
 
 
 
@@ -49,11 +63,14 @@ class KnowledgeEngine {
 
 
 
+
+
         if(!item.patterns){
 
             item.patterns=[];
 
         }
+
 
 
 
@@ -65,6 +82,7 @@ class KnowledgeEngine {
 
 
 
+
         if(!item.category){
 
             item.category="عمومی";
@@ -73,7 +91,16 @@ class KnowledgeEngine {
 
 
 
+
+
+
         this.knowledge.push(item);
+
+
+
+
+
+        this.save();
 
 
 
@@ -90,30 +117,24 @@ class KnowledgeEngine {
 
 
 
-    remove(index){
+    save(){
 
 
 
-        if(
-            index >= 0 &&
-            index < this.knowledge.length
-        ){
+        if(this.database){
 
 
-            this.knowledge.splice(
-                index,
-                1
-            );
+            this.database.knowledge =
+            this.knowledge;
 
 
-            return true;
+
+            this.database.save();
+
 
 
         }
 
-
-
-        return false;
 
 
     }
@@ -142,120 +163,18 @@ class KnowledgeEngine {
 
 
 
-    search(query,language){
+    searchByQuestion(question){
 
 
 
-        let best = null;
+        return this.knowledge.find(item=>{
 
-        let bestScore = 0;
 
-
-
-
-
-        this.knowledge.forEach(item=>{
-
-
-
-            let score=0;
-
-
-
-
-
-            // بررسی سوال اصلی
-
-            score +=
-            language.compare(
-                query,
-                item.question
-            ) * 50;
-
-
-
-
-
-
-
-            // بررسی الگوها
-
-
-            item.patterns.forEach(pattern=>{
-
-
-                score +=
-                language.compare(
-                    query,
-                    pattern
-                ) * 40;
-
-
-
-            });
-
-
-
-
-
-
-
-
-            // بررسی کلیدواژه‌ها
-
-
-            item.keywords.forEach(keyword=>{
-
-
-                if(
-                    query.includes(keyword)
-                ){
-
-                    score += 15;
-
-                }
-
-
-
-            });
-
-
-
-
-
-
-
-
-            if(score > bestScore){
-
-
-                bestScore = score;
-
-
-                best = item;
-
-
-            }
-
-
+            return item.question === question;
 
 
         });
 
-
-
-
-
-
-        return {
-
-
-            item:best,
-
-            score:bestScore
-
-
-        };
 
 
     }
@@ -268,7 +187,50 @@ class KnowledgeEngine {
 
 
 
-    update(index,newData){
+    remove(index){
+
+
+
+        if(
+            this.knowledge[index]
+        ){
+
+
+            this.knowledge.splice(
+
+                index,
+
+                1
+
+            );
+
+
+
+            this.save();
+
+
+
+            return true;
+
+
+        }
+
+
+
+        return false;
+
+
+    }
+
+
+
+
+
+
+
+
+
+    update(index,data){
 
 
 
@@ -281,9 +243,13 @@ class KnowledgeEngine {
 
                 ...this.knowledge[index],
 
-                ...newData
+                ...data
 
             };
+
+
+
+            this.save();
 
 
 
@@ -291,6 +257,7 @@ class KnowledgeEngine {
 
 
         }
+
 
 
 
