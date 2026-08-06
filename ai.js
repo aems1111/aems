@@ -1,12 +1,14 @@
-let knowledge = 
+let knowledge =
 JSON.parse(localStorage.getItem("knowledge")) || [];
 
 
-// بارگذاری دانش اولیه
+
 let defaultKnowledge = [];
 
+
+
 fetch("knowledge.json")
-.then(response => response.json())
+.then(res => res.json())
 .then(data => {
 
     defaultKnowledge = data;
@@ -15,7 +17,7 @@ fetch("knowledge.json")
 
 
 
-// کاربر فعلی
+
 
 let currentUser =
 localStorage.getItem("currentUser");
@@ -32,7 +34,8 @@ if(!currentUser){
 
 
 
-// حافظه کاربران
+
+
 
 let allMemory =
 JSON.parse(localStorage.getItem("userMemory")) || {};
@@ -41,12 +44,7 @@ JSON.parse(localStorage.getItem("userMemory")) || {};
 
 if(!allMemory[currentUser]){
 
-    allMemory[currentUser] = {};
-
-    localStorage.setItem(
-        "userMemory",
-        JSON.stringify(allMemory)
-    );
+    allMemory[currentUser]={};
 
 }
 
@@ -61,7 +59,8 @@ allMemory[currentUser];
 
 function saveMemory(){
 
-    allMemory[currentUser] = userMemory;
+
+    allMemory[currentUser]=userMemory;
 
 
     localStorage.setItem(
@@ -80,46 +79,43 @@ function saveMemory(){
 function sendMessage(){
 
 
-    let input =
-    document.getElementById("message");
-
-
-    let text =
-    input.value.trim();
+let input =
+document.getElementById("message");
 
 
 
-    if(text===""){
-        return;
-    }
+let text =
+input.value.trim();
 
 
 
-    let box =
-    document.getElementById("chatBox");
+if(text==="") return;
 
 
 
-    box.innerHTML +=
-    "<p>👤 شما: "+text+"</p>";
+let box =
+document.getElementById("chatBox");
 
 
 
-    let answer =
-    think(text);
+box.innerHTML +=
+"<p>👤 شما: "+text+"</p>";
 
 
 
-    box.innerHTML +=
-    "<p>🤖 MyAI: "+answer+"</p>";
+let answer =
+think(text);
 
 
 
-    input.value="";
+box.innerHTML +=
+"<p>🤖 MyAI: "+answer+"</p>";
 
 
-    box.scrollTop =
-    box.scrollHeight;
+
+input.value="";
+
+
 
 }
 
@@ -132,102 +128,93 @@ function sendMessage(){
 function think(text){
 
 
-    let clean =
-    normalize(text);
+let clean =
+normalize(text);
 
 
 
-    let intent =
-    detectIntent(clean);
-
-
-
-
-    // اسم MyAI
-
-    if(intent==="ask_ai_name"){
-
-        return "من MyAI هستم 🤖";
-
-    }
+let intent =
+detectIntent(clean);
 
 
 
 
-    // پرسیدن اسم کاربر
+if(intent==="ask_ai_name"){
 
-    if(intent==="ask_user_name"){
+return "من MyAI هستم 🤖";
 
-
-        if(userMemory.name){
-
-            return "اسم شما "
-            + userMemory.name
-            + " است 😊";
-
-        }
-
-
-        return "هنوز اسم شما را نمی‌دانم.";
-
-    }
+}
 
 
 
 
 
-    // ذخیره اسم کاربر
-
-    if(intent==="set_user_name"){
+if(intent==="ask_user_name"){
 
 
-        let name =
-        extractName(clean);
+if(userMemory.name){
+
+return "اسم شما "
++userMemory.name+
+" است 😊";
+
+}
 
 
+return "هنوز اسم شما را نمی‌دانم.";
 
-        if(name){
-
-
-            userMemory.name =
-            name;
-
-
-            saveMemory();
-
-
-
-            return "خوشحالم که آشنا شدم "
-            + name
-            + " 😊";
-
-        }
-
-    }
+}
 
 
 
 
 
-
-    // جستجو در دانش
-
-    let answer =
-    searchKnowledge(clean);
+if(intent==="set_user_name"){
 
 
-
-    if(answer){
-
-        return answer;
-
-    }
+let name =
+extractName(clean);
 
 
 
+if(name){
 
 
-    return "این موضوع را هنوز یاد نگرفته‌ام.";
+userMemory.name=name;
+
+
+saveMemory();
+
+
+return "خوشحالم که آشنا شدم "
++name+
+" 😊";
+
+
+}
+
+
+}
+
+
+
+
+
+let answer =
+searchKnowledge(clean);
+
+
+
+if(answer){
+
+return answer;
+
+}
+
+
+
+
+return "این موضوع را هنوز یاد نگرفته‌ام.";
 
 }
 
@@ -243,72 +230,57 @@ function detectIntent(text){
 
 
 
-    // سوال درباره MyAI
+if(
 
-    if(
+text.includes("اسم تو") ||
+text.includes("نام تو") ||
+text.includes("تو کی هستی")
 
-        text.includes("اسم تو") ||
-        text.includes("نام تو") ||
-        text.includes("تو کی هستی") ||
-        text.includes("تو چی هستی")
+){
 
-    ){
+return "ask_ai_name";
 
-        return "ask_ai_name";
-
-    }
+}
 
 
 
 
+if(
 
-    // سوال درباره اسم خود کاربر
+text.includes("اسم من چیه") ||
+text.includes("اسم من چیست") ||
+text.includes("نام من چیست") ||
+text.includes("اسمم چیه")
 
-    if(
+){
 
-        text.includes("اسم من چیه") ||
-        text.includes("اسم من چیست") ||
-        text.includes("نام من چیه") ||
-        text.includes("نام من چیست") ||
-        text.includes("اسمم چیه") ||
-        text.includes("من کی هستم")
+return "ask_user_name";
 
-    ){
-
-        return "ask_user_name";
-
-    }
+}
 
 
 
 
 
-    // معرفی اسم
+if(
 
-    if(
+(text.includes("اسم من") ||
+text.includes("نام من"))
 
-        (
-        text.includes("اسم من") ||
-        text.includes("نام من")
-        )
+&&
 
-        &&
+(text.includes("هست") ||
+text.includes("است"))
 
-        (
-        text.includes("هست") ||
-        text.includes("است")
-        )
+){
 
-    ){
+return "set_user_name";
 
-        return "set_user_name";
-
-    }
+}
 
 
 
-
-    return "unknown";
+return "unknown";
 
 
 }
@@ -324,31 +296,18 @@ function detectIntent(text){
 function extractName(text){
 
 
-    let name = text;
+return text
 
+.replace("اسم من","")
 
-    name =
-    name.replace("اسم من","");
+.replace("نام من","")
 
+.replace("هست","")
 
-    name =
-    name.replace("نام من","");
+.replace("است","")
 
+.trim();
 
-    name =
-    name.replace("هست","");
-
-
-    name =
-    name.replace("است","");
-
-
-    name =
-    name.trim();
-
-
-
-    return name;
 
 }
 
@@ -363,68 +322,146 @@ function extractName(text){
 function searchKnowledge(text){
 
 
+let allKnowledge=[
 
-    let allKnowledge = [
+...defaultKnowledge,
 
-        ...defaultKnowledge,
+...knowledge
 
-        ...knowledge
-
-    ];
-
-
-
-    let bestAnswer = null;
-
-    let bestScore = 0;
+];
 
 
 
+let bestAnswer=null;
 
 
-    allKnowledge.forEach(item=>{
-
-
-        let score =
-        similarity(
-
-            text,
-
-            normalize(item.question)
-
-        );
+let bestScore=0;
 
 
 
-        if(score > bestScore){
+allKnowledge.forEach(item=>{
 
 
-            bestScore = score;
+let score=calculateScore(
+
+text,
+
+item
+
+);
 
 
-            bestAnswer =
-            item.answer;
+
+if(score > bestScore){
 
 
-        }
+bestScore=score;
 
 
+bestAnswer=item.answer;
 
-    });
+
+}
+
+
+});
 
 
 
 
+if(bestScore >= 50){
 
-    if(bestScore >= 0.35){
+return bestAnswer;
 
-        return bestAnswer;
-
-    }
-
+}
 
 
-    return null;
+
+return null;
+
+
+}
+
+
+
+
+
+
+
+
+
+function calculateScore(userText,item){
+
+
+let score=0;
+
+
+
+let question =
+normalize(item.question);
+
+
+
+let keywords =
+item.keywords || [];
+
+
+
+
+
+// شباهت سؤال
+
+score +=
+similarity(userText,question) * 50;
+
+
+
+
+
+// بررسی کلیدواژه‌ها
+
+
+keywords.forEach(word=>{
+
+
+if(userText.includes(
+normalize(word)
+)){
+
+score +=10;
+
+}
+
+
+});
+
+
+
+
+// کلمات مشترک سؤال
+
+
+let words =
+userText.split(" ");
+
+
+
+words.forEach(word=>{
+
+
+if(question.includes(word)){
+
+score +=5;
+
+}
+
+
+});
+
+
+
+
+return score;
 
 
 }
@@ -441,46 +478,45 @@ function similarity(a,b){
 
 
 
-    let A =
-    a.split(" ");
+let A =
+a.split(" ");
 
 
 
-    let B =
-    b.split(" ");
+let B =
+b.split(" ");
 
 
 
-    let count = 0;
+let same=0;
 
 
 
-    A.forEach(word=>{
+A.forEach(word=>{
 
 
-        if(
+if(
 
-            word.length > 1
-            &&
-            B.includes(word)
+word.length>1
+&&
+B.includes(word)
 
-        ){
+){
 
-            count++;
+same++;
 
-        }
-
-
-    });
+}
 
 
+});
 
 
-    return count /
-    Math.max(
-        A.length,
-        B.length
-    );
+
+return same /
+Math.max(
+A.length,
+B.length
+);
 
 
 }
@@ -496,13 +532,36 @@ function similarity(a,b){
 function normalize(text){
 
 
-    return text
+let stopWords=[
 
-    .toLowerCase()
+"است",
+"هست",
+"چی",
+"کجاست",
+"کجا",
+"را",
+"یک",
+"از",
+"به",
+"من"
 
-    .replace(/[؟?!.,]/g,"")
+];
 
-    .trim();
+
+
+return text
+
+.toLowerCase()
+
+.replace(/[؟?!.,]/g,"")
+
+.split(" ")
+
+.filter(word=> !stopWords.includes(word))
+
+.join(" ")
+
+.trim();
 
 
 }
