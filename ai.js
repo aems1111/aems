@@ -2,25 +2,77 @@ let knowledge =
 JSON.parse(localStorage.getItem("knowledge")) || [];
 
 
+let currentUser =
+localStorage.getItem("currentUser");
+
+
+
+if(!currentUser){
+
+alert("لطفاً اول وارد حساب شوید");
+
+window.location="login.html";
+
+}
+
+
+
+
+let allMemory =
+JSON.parse(localStorage.getItem("userMemory")) || {};
+
+
+
+if(!allMemory[currentUser]){
+
+allMemory[currentUser]={};
+
+}
+
+
+
 let userMemory =
-JSON.parse(localStorage.getItem("userMemory")) || [];
+allMemory[currentUser];
+
+
+
+
+
+function saveUserMemory(){
+
+
+allMemory[currentUser]=userMemory;
+
+
+localStorage.setItem(
+"userMemory",
+JSON.stringify(allMemory)
+);
+
+
+}
+
 
 
 
 function sendMessage(){
 
 
-let input=document.getElementById("message");
+let input =
+document.getElementById("message");
 
 
-let text=input.value.trim();
+let text =
+input.value.trim();
+
 
 
 if(text=="") return;
 
 
 
-let box=document.getElementById("chatBox");
+let box =
+document.getElementById("chatBox");
 
 
 
@@ -29,7 +81,8 @@ box.innerHTML +=
 
 
 
-let answer=think(text);
+let answer =
+think(text);
 
 
 
@@ -50,31 +103,34 @@ input.value="";
 function think(text){
 
 
-let clean=text
+let clean =
+text
 .toLowerCase()
 .replace(/[؟?!.,]/g,"");
 
 
 
-// حافظه اسم
+
+// ذخیره اسم
 
 if(clean.includes("اسم من")){
 
 
-let name=
-clean.replace("اسم من","")
+let name =
+clean
+.replace("اسم من","")
 .replace("است","")
 .trim();
 
 
 
+if(name){
+
+
 userMemory.name=name;
 
 
-localStorage.setItem(
-"userMemory",
-JSON.stringify(userMemory)
-);
+saveUserMemory();
 
 
 
@@ -83,21 +139,36 @@ return "خوشحالم که آشنا شدم "+name+" 😊";
 
 }
 
+}
 
 
 
-if(clean.includes("اسم من چیست")){
+
+
+// پرسیدن اسم
+
+if(
+clean.includes("اسم من چیست") ||
+clean.includes("نام من چیست")
+){
 
 
 if(userMemory.name){
+
 
 return "اسم شما "+
 userMemory.name+
 " است.";
 
-}
 
 }
+
+
+return "هنوز اسم شما را نمی‌دانم.";
+
+
+}
+
 
 
 
@@ -114,22 +185,26 @@ let score=0;
 knowledge.forEach(item=>{
 
 
-let s=
-similarity(clean,item.question);
+let s =
+similarity(
+clean,
+item.question.toLowerCase()
+);
 
 
 
 if(s>score){
 
+
 score=s;
 
 best=item.answer;
+
 
 }
 
 
 });
-
 
 
 
@@ -141,16 +216,10 @@ return best;
 
 
 
-
-// ذخیره سؤال ناشناخته
-
-saveUnknownQuestion(text);
-
-
-
-return "این موضوع را هنوز یاد نگرفته‌ام، ولی سؤال تو ذخیره شد تا بعداً یاد بگیرم.";
+return "این موضوع را هنوز یاد نگرفته‌ام.";
 
 }
+
 
 
 
@@ -163,15 +232,20 @@ let A=a.split(" ");
 let B=b.split(" ");
 
 
-let count=0;
+
+let same=0;
+
 
 
 A.forEach(word=>{
 
 
-if(B.includes(word)){
+if(
+word.length>1 &&
+B.includes(word)
+){
 
-count++;
+same++;
 
 }
 
@@ -180,8 +254,11 @@ count++;
 
 
 
-return count /
-Math.max(A.length,B.length);
+return same /
+Math.max(
+A.length,
+B.length
+);
 
 
 }
