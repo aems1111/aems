@@ -4,32 +4,87 @@ class MyAICore {
     constructor(){
 
 
-        this.language = new NormalizeEngine();
+        // دیتابیس
 
-        this.spell = new SpellCheckEngine();
+        this.database =
+        new DatabaseEngine();
 
-        this.tokenizer = new TokenizerEngine();
 
-        this.synonym = new SynonymEngine();
+        this.database.init();
 
-        this.questionType = new QuestionTypeEngine();
 
-        this.entities = new EntityEngine();
 
-        this.knowledge = new KnowledgeEngine();
 
-        this.search = new SemanticSearchEngine();
+        // مغز دانش
 
-        this.memory = new MemoryEngine();
+        this.knowledge =
+        new KnowledgeEngine(
+            this.database
+        );
 
-        this.context = new ContextEngine();
 
-        this.learning = new LearningEngine();
 
-        this.reasoning = new ReasoningEngine();
+
+        // بخش های هوش
+
+        this.language =
+        new NormalizeEngine();
+
+
+
+        this.spell =
+        new SpellCheckEngine();
+
+
+
+        this.tokenizer =
+        new TokenizerEngine();
+
+
+
+        this.synonym =
+        new SynonymEngine();
+
+
+
+        this.questionType =
+        new QuestionTypeEngine();
+
+
+
+        this.entities =
+        new EntityEngine();
+
+
+
+        this.search =
+        new SemanticSearchEngine();
+
+
+
+        this.memory =
+        new MemoryEngine();
+
+
+
+        this.context =
+        new ContextEngine();
+
+
+
+        this.learning =
+        new LearningEngine();
+
+
+
+        this.reasoning =
+        new ReasoningEngine();
+
 
 
     }
+
+
 
 
 
@@ -41,16 +96,13 @@ class MyAICore {
 
 
 
-        // 1. اصلاح متن
-
         let text =
-        this.language.normalize(message);
+        this.language.normalize(
+            message
+        );
 
 
 
-
-
-        // 2. اصلاح غلط‌ها
 
         text =
         this.spell.check(text);
@@ -58,9 +110,6 @@ class MyAICore {
 
 
 
-
-
-        // 3. بررسی زمینه گفتگو
 
         text =
         this.context.resolve(
@@ -74,10 +123,9 @@ class MyAICore {
 
 
 
-        // 4. بررسی حافظه کاربر
+        // بررسی حافظه
 
-
-        let memoryAnswer =
+        let memory =
         this.checkMemory(
             userId,
             text
@@ -85,11 +133,9 @@ class MyAICore {
 
 
 
-        if(memoryAnswer){
+        if(memory){
 
-
-            return memoryAnswer;
-
+            return memory;
 
         }
 
@@ -99,8 +145,7 @@ class MyAICore {
 
 
 
-        // 5. پیدا کردن جواب
-
+        // جستجو در دانش
 
         let result =
         this.search.search(
@@ -127,16 +172,31 @@ class MyAICore {
         ){
 
 
+
             let answer =
             result.item.answer;
 
 
 
-            this.saveContext(
+
+            this.context.update(
+
                 userId,
-                text,
-                result.item
+
+                {
+
+                    question:text,
+
+                    topic:
+                    result.item.category,
+
+                    entity:
+                    result.item.question
+
+                }
+
             );
+
 
 
 
@@ -152,6 +212,7 @@ class MyAICore {
 
 
 
+
             return answer;
 
 
@@ -163,8 +224,7 @@ class MyAICore {
 
 
 
-        // 6. اگر جواب پیدا نشد
-
+        // اگر جواب نبود
 
         this.learning.add(text);
 
@@ -173,6 +233,8 @@ class MyAICore {
 
 
         return "این موضوع را هنوز یاد نگرفته‌ام.";
+
+
 
     }
 
@@ -189,9 +251,11 @@ class MyAICore {
 
 
         if(
+
             text.includes("اسم من")
             ||
             text.includes("نام من")
+
         ){
 
 
@@ -207,7 +271,13 @@ class MyAICore {
             if(name){
 
 
-                return "اسم شما "+name+" است.";
+                return:
+
+                "اسم شما "
+                +
+                name
+                +
+                " است.";
 
 
             }
@@ -217,41 +287,8 @@ class MyAICore {
 
 
 
-
-
         return null;
 
-
-    }
-
-
-
-
-
-
-
-
-
-    saveContext(id,text,item){
-
-
-
-        this.context.update(
-
-            id,
-
-            {
-
-                question:text,
-
-                topic:item.category,
-
-                entity:item.question
-
-
-            }
-
-        );
 
 
     }
@@ -271,9 +308,14 @@ class MyAICore {
         this.knowledge.add({
 
 
+
             question:question,
 
+
+
             patterns:[],
+
+
 
             keywords:
             this.tokenizer
@@ -281,14 +323,21 @@ class MyAICore {
             .important,
 
 
+
             entities:[],
 
+
+
             category:"عمومی",
+
+
 
             answer:answer
 
 
+
         });
+
 
 
     }
@@ -299,5 +348,5 @@ class MyAICore {
 
 
 
-window.MyAICore = MyAICore;
-
+window.MyAICore =
+MyAICore;
