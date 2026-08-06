@@ -4,8 +4,6 @@ class MyAICore {
     constructor(){
 
 
-        // دیتابیس
-
         this.database =
         new DatabaseEngine();
 
@@ -14,18 +12,12 @@ class MyAICore {
 
 
 
-
-        // مغز دانش
-
         this.knowledge =
         new KnowledgeEngine(
             this.database
         );
 
 
-
-
-        // بخش های هوش
 
         this.language =
         new NormalizeEngine();
@@ -44,16 +36,6 @@ class MyAICore {
 
         this.synonym =
         new SynonymEngine();
-
-
-
-        this.questionType =
-        new QuestionTypeEngine();
-
-
-
-        this.entities =
-        new EntityEngine();
 
 
 
@@ -77,14 +59,7 @@ class MyAICore {
 
 
 
-        this.reasoning =
-        new ReasoningEngine();
-
-
-
     }
-
-
 
 
 
@@ -100,7 +75,6 @@ class MyAICore {
         this.language.normalize(
             message
         );
-
 
 
 
@@ -122,10 +96,7 @@ class MyAICore {
 
 
 
-
-        // بررسی حافظه
-
-        let memory =
+        let memoryAnswer =
         this.checkMemory(
             userId,
             text
@@ -133,9 +104,9 @@ class MyAICore {
 
 
 
-        if(memory){
+        if(memoryAnswer){
 
-            return memory;
+            return memoryAnswer;
 
         }
 
@@ -144,8 +115,6 @@ class MyAICore {
 
 
 
-
-        // جستجو در دانش
 
         let result =
         this.search.search(
@@ -166,16 +135,15 @@ class MyAICore {
 
 
 
+
         if(
             result &&
-            result.score > 40
+            result.score > 20
         ){
-
 
 
             let answer =
             result.item.answer;
-
 
 
 
@@ -188,10 +156,11 @@ class MyAICore {
                     question:text,
 
                     topic:
-                    result.item.category,
+                    result.item.category || "عمومی",
 
                     entity:
                     result.item.question
+
 
                 }
 
@@ -212,7 +181,6 @@ class MyAICore {
 
 
 
-
             return answer;
 
 
@@ -224,7 +192,6 @@ class MyAICore {
 
 
 
-        // اگر جواب نبود
 
         this.learning.add(text);
 
@@ -233,7 +200,6 @@ class MyAICore {
 
 
         return "این موضوع را هنوز یاد نگرفته‌ام.";
-
 
 
     }
@@ -255,6 +221,8 @@ class MyAICore {
             text.includes("اسم من")
             ||
             text.includes("نام من")
+            ||
+            text.includes("من کی هستم")
 
         ){
 
@@ -271,16 +239,11 @@ class MyAICore {
             if(name){
 
 
-                return:
-
-                "اسم شما "
-                +
-                name
-                +
-                " است.";
+                return "اسم شما "+name+" است.";
 
 
             }
+
 
 
         }
@@ -288,7 +251,6 @@ class MyAICore {
 
 
         return null;
-
 
 
     }
@@ -308,32 +270,32 @@ class MyAICore {
         this.knowledge.add({
 
 
-
             question:question,
 
 
+            patterns:[
 
-            patterns:[],
+                question
+
+            ],
 
 
 
             keywords:
+
             this.tokenizer
             .tokenize(question)
-            .important,
+            .important || [],
 
 
 
             entities:[],
 
 
-
             category:"عمومی",
 
 
-
             answer:answer
-
 
 
         });
@@ -348,5 +310,4 @@ class MyAICore {
 
 
 
-window.MyAICore =
-MyAICore;
+window.MyAICore = MyAICore;
