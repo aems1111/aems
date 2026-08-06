@@ -6,15 +6,13 @@ let currentUser =
 localStorage.getItem("currentUser");
 
 
-
 if(!currentUser){
 
-alert("لطفاً اول وارد حساب شوید");
+alert("لطفاً وارد حساب شوید");
 
 window.location="login.html";
 
 }
-
 
 
 
@@ -25,14 +23,18 @@ JSON.parse(localStorage.getItem("userMemory")) || {};
 
 if(!allMemory[currentUser]){
 
-allMemory[currentUser]={};
+allMemory[currentUser] = {};
+
+localStorage.setItem(
+"userMemory",
+JSON.stringify(allMemory)
+);
 
 }
 
 
 
-let userMemory =
-allMemory[currentUser];
+let userMemory = allMemory[currentUser];
 
 
 
@@ -40,8 +42,7 @@ allMemory[currentUser];
 
 function saveUserMemory(){
 
-
-allMemory[currentUser]=userMemory;
+allMemory[currentUser] = userMemory;
 
 
 localStorage.setItem(
@@ -49,14 +50,12 @@ localStorage.setItem(
 JSON.stringify(allMemory)
 );
 
-
 }
 
 
 
 
 function sendMessage(){
-
 
 let input =
 document.getElementById("message");
@@ -66,14 +65,12 @@ let text =
 input.value.trim();
 
 
-
-if(text=="") return;
+if(text==="") return;
 
 
 
 let box =
 document.getElementById("chatBox");
-
 
 
 box.innerHTML +=
@@ -93,7 +90,6 @@ box.innerHTML +=
 
 input.value="";
 
-
 }
 
 
@@ -106,28 +102,63 @@ function think(text){
 let clean =
 text
 .toLowerCase()
-.replace(/[؟?!.,]/g,"");
+.replace(/[؟?!.,]/g,"")
+.trim();
 
 
 
 
-// ذخیره اسم
 
-if(clean.includes("اسم من")){
+// اول بررسی کن آیا کاربر اسمش را پرسیده
+
+
+if(
+clean.includes("اسم من چیست") ||
+clean.includes("نام من چیست") ||
+clean.includes("اسمم چیست")
+){
+
+
+if(userMemory.name){
+
+return "اسم شما " + userMemory.name + " است.";
+
+}
+
+else{
+
+return "هنوز اسم شما را نمی‌دانم.";
+
+}
+
+
+}
+
+
+
+
+// یادگیری اسم کاربر
+
+
+if(
+clean.includes("اسم من") ||
+clean.includes("نام من")
+){
 
 
 let name =
 clean
 .replace("اسم من","")
+.replace("نام من","")
 .replace("است","")
 .trim();
 
 
 
-if(name){
+if(name.length > 0){
 
 
-userMemory.name=name;
+userMemory.name = name;
 
 
 saveUserMemory();
@@ -139,53 +170,25 @@ return "خوشحالم که آشنا شدم "+name+" 😊";
 
 }
 
-}
-
-
-
-
-
-// پرسیدن اسم
-
-if(
-clean.includes("اسم من چیست") ||
-clean.includes("نام من چیست")
-){
-
-
-if(userMemory.name){
-
-
-return "اسم شما "+
-userMemory.name+
-" است.";
-
-
-}
-
-
-return "هنوز اسم شما را نمی‌دانم.";
-
 
 }
 
 
 
 
+// جستجو در دانش
 
-// جستجوی دانش
 
+let bestAnswer=null;
 
-let best=null;
-
-let score=0;
+let bestScore=0;
 
 
 
 knowledge.forEach(item=>{
 
 
-let s =
+let score =
 similarity(
 clean,
 item.question.toLowerCase()
@@ -193,13 +196,11 @@ item.question.toLowerCase()
 
 
 
-if(s>score){
+if(score > bestScore){
 
+bestScore = score;
 
-score=s;
-
-best=item.answer;
-
+bestAnswer = item.answer;
 
 }
 
@@ -208,9 +209,10 @@ best=item.answer;
 
 
 
-if(score>=0.4){
 
-return best;
+if(bestScore >= 0.4){
+
+return bestAnswer;
 
 }
 
@@ -227,25 +229,28 @@ return "این موضوع را هنوز یاد نگرفته‌ام.";
 function similarity(a,b){
 
 
-let A=a.split(" ");
-
-let B=b.split(" ");
-
+let wordsA =
+a.split(" ");
 
 
-let same=0;
+let wordsB =
+b.split(" ");
 
 
 
-A.forEach(word=>{
+let count=0;
+
+
+
+wordsA.forEach(word=>{
 
 
 if(
 word.length>1 &&
-B.includes(word)
+wordsB.includes(word)
 ){
 
-same++;
+count++;
 
 }
 
@@ -254,10 +259,10 @@ same++;
 
 
 
-return same /
+return count /
 Math.max(
-A.length,
-B.length
+wordsA.length,
+wordsB.length
 );
 
 
