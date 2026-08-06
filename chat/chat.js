@@ -1,12 +1,15 @@
-let ai =
-new MyAICore();
+let database =
+new DatabaseEngine();
+
+
+database.init();
 
 
 
-let userId =
-"guest";
-
-
+let knowledge =
+new KnowledgeEngine(
+    database
+);
 
 
 
@@ -15,12 +18,10 @@ let userId =
 function addMessage(text,type){
 
 
-
 let chat =
 document.getElementById(
 "chat"
 );
-
 
 
 let div =
@@ -29,29 +30,17 @@ document.createElement(
 );
 
 
-
 div.className =
-"message "
-+
-type;
+"message "+type;
 
 
-
-div.innerHTML =
-text;
-
+div.innerHTML=text;
 
 
 chat.appendChild(div);
 
 
-
-chat.scrollTop =
-chat.scrollHeight;
-
-
 }
-
 
 
 
@@ -77,20 +66,15 @@ input.value.trim();
 
 
 
-
 if(!text)
 return;
 
 
 
 
-
 addMessage(
-
 "👤 شما: "+text,
-
 "user"
-
 );
 
 
@@ -99,62 +83,43 @@ addMessage(
 
 
 let answer =
-ai.ask(
+"این موضوع را هنوز یاد نگرفته‌ام.";
 
-userId,
 
-text
 
-);
+knowledge.getAll()
+.forEach(item=>{
+
+
+
+if(
+text.includes(
+item.question
+)
+){
+
+
+answer=item.answer;
+
+
+}
+
+
+
+});
+
 
 
 
 
 
 addMessage(
-
 "🤖 MyAI: "+answer,
-
 "ai"
-
 );
-
-
-
 
 
 
 input.value="";
 
-
-
 }
-
-
-
-
-
-
-
-
-document
-
-.getElementById("message")
-
-.addEventListener(
-
-"keydown",
-
-function(e){
-
-
-if(e.key==="Enter"){
-
-send();
-
-}
-
-
-}
-
-);
